@@ -20,8 +20,13 @@ def main():
     load_dotenv(config_dir / ".env")
     
     # 读取配置
+    # GitHub Actions 会自动提供 GITHUB_TOKEN 环境变量
     github_token = os.getenv("GITHUB_TOKEN")
-    github_repo = os.getenv("GITHUB_REPO", "lalahoney11-pixel/ai-news-workspace")
+    github_repo = os.getenv("GITHUB_REPO", "")
+    
+    # 如果 GITHUB_REPO 为空，从 GITHUB_REPOSITORY 获取 (Actions 自动提供)
+    if not github_repo:
+        github_repo = os.getenv("GITHUB_REPOSITORY", "lalahoney11-pixel/ai-news-workspace")
     min_score = int(os.getenv("MIN_SCORE", "7"))
     max_entries = int(os.getenv("MAX_ENTRIES_PER_FEED", "5"))
     
