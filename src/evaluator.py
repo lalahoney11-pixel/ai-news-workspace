@@ -83,6 +83,7 @@ def evaluate_entry(entry: Dict, api_keys: Dict) -> Optional[Dict]:
     """
     title = entry['title']
     summary = entry['summary']
+    text = (title + ' ' + summary).lower()
     
     # 尝试 Gemini
     if api_keys.get('gemini'):
@@ -98,14 +99,63 @@ def evaluate_entry(entry: Dict, api_keys: Dict) -> Optional[Dict]:
         if result:
             return result
     
-    # 降级方案：简单关键词打分
+    # 降级方案：智能关键词打分
     print(f"  ⚡ 使用关键词快速打分...")
-    keywords = ['AI', 'neural', 'brain', 'robot', 'model', 'learning', 'interface', 'AGI']
-    score = 5 + sum(1 for kw in keywords if kw.lower() in (title + summary).lower())
+    
+    # 核心 AI 词（必须有至少一个）
+    ai_keywords = ['ai ', 'artificial intelligence', 'machine learning', 'deep learning', 
+                   'llm', 'language model', 'neural network', 'agentic', 'agi']
+    
+    # 前沿技术词（有则加分）
+    tech_keywords = ['embodied', 'robot', 'humanoid', 'brain-computer', 'bci', 'neural interface',
+                     'autonomous', 'reinforcement learning', 'transformer', 'diffusion']
+    
+    # 负面词（有则减分）
+    negative_keywords = ['layoff', 'fired', 'lawsuit', 'scandal', 'stock', 'earnings',
+                         'ceo', 'acquisition', 'merger']
+    
+    # 打分逻辑
+    score = 3  # 基础分
+    
+    # 检查是否有 AI 核心词（必须有）
+    has_ai = any(kw in text for kw in ai_keywords)
+    if has_ai:
+        score += 3
+    else:
+        # 没有 AI 核心词，最高只能得 5 分
+        score = 2
+    
+    # 前沿技术词加分
+    score += sum(1 for kw in tech_keywords if kw in text)
+    
+    # 负面词减分
+    score -= sum(1 for kw in negative_keywords if kw in text)
+    
+    # 来源加权
+    source = entry.get('source', '').lower()
+    if 'nature' in source or 'arxiv' in source:
+        score += 1
+    if 'techcrunch' in source:
+        score -= 1  # 偏商业
+    
+    # 限制 1-10 分
+    score = max(1, min(10, score))
+    
+    # 生成标签
+    tags = []
+    if 'embodied' in text or 'robot' in text or 'humanoid' in text:
+        tags.append("具身智能")
+    if 'brain' in text or 'neural' in text or 'bci' in text:
+        tags.append("脑机接口")
+    if 'llm' in text or 'language model' in text:
+        tags.append("大模型")
+    if not tags:
+        tags.append("AI 前沿")
+    
     return {
-        "score": min(score, 10),
-        "tags": ["AI 前沿"],
-        "reason": "关键词匹配度较高"
+        "score": score,
+        "tags": tags,
+        "reason": f"{'AI 核心内容' if has_ai else 'AI 关联度低'}" + (f" +{sum(1 for kw in tech_keywords if kw in text)} 技术点" if any(kw in text for kw in tech_keywords) else "")
     }
 
 if __name__ == "__main__":
