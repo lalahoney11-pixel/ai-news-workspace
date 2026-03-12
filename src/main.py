@@ -23,14 +23,8 @@ def main():
     # GitHub Actions 会自动提供 GITHUB_TOKEN 环境变量
     github_token = os.getenv("GITHUB_TOKEN")
     
-    # 获取仓库名：优先用 GITHUB_REPOSITORY（Actions 自动提供）
-    github_repo = os.getenv("GITHUB_REPOSITORY")
-    if not github_repo:
-        github_repo = os.getenv("GITHUB_REPO", "lalahoney11-pixel/ai-news-workspace")
-    
-    print(f"[DEBUG] GITHUB_REPOSITORY={os.getenv('GITHUB_REPOSITORY')}")
-    print(f"[DEBUG] GITHUB_REPO={os.getenv('GITHUB_REPO')}")
-    print(f"[DEBUG] 最终 github_repo={github_repo}")
+    # 硬编码仓库名（不依赖环境变量）
+    github_repo = "lalahoney11-pixel/ai-news-workspace"
     min_score = int(os.getenv("MIN_SCORE", "7"))
     max_entries = int(os.getenv("MAX_ENTRIES_PER_FEED", "5"))
     
