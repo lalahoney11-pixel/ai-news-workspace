@@ -36,11 +36,12 @@ def main():
         "groq": os.getenv("GROQ_API_KEY"),
     }
     
-    # 验证配置
+    # GitHub Actions 会自动提供 GITHUB_TOKEN
+    # 如果是本地运行没有 Token，给个警告但继续
     if not github_token:
-        print("❌ 错误：GITHUB_TOKEN 未配置")
-        print("请在 config/.env 文件中设置 GitHub Token")
-        sys.exit(1)
+        print("⚠️  警告：GITHUB_TOKEN 未设置，将无法发布 Issue")
+        print("   GitHub Actions 会自动提供此变量")
+        github_token = ""
     
     print("=" * 50)
     print("🦞 AI 资讯选题系统启动")
