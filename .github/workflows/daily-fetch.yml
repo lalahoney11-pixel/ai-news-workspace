@@ -30,4 +30,14 @@ jobs:
         MIN_SCORE: ${{ vars.MIN_SCORE || 7 }}
         MAX_ENTRIES_PER_FEED: ${{ vars.MAX_ENTRIES_PER_FEED || 5 }}
       run: |
-        python src/main.py
+        echo "=== 开始执行 ==="
+        echo "Python 版本："
+        python --version
+        echo ""
+        echo "当前目录："
+        ls -la
+        echo ""
+        echo "=== 运行脚本 ==="
+        python src/main.py 2>&1
+        echo ""
+        echo "=== 执行完成 ==="
