@@ -8,6 +8,28 @@ from typing import List, Dict
 
 # 完整的 RSS 源清单
 RSS_FEEDS = [
+    # ===== 中文资讯源 =====
+    # AI 前沿与大模型
+    ("机器之心", "https://jiqizhixin.com/feed"),
+    ("量子位", "https://www.qbitai.com/feed"),
+    ("新智元", "https://www.jiwei.ai/feed"),
+    ("雷锋网 AI", "https://www.leiphone.com/category/ai/feed"),
+    ("36 氪 AI", "https://36kr.com/motif/852943696705/feed"),
+    
+    # 具身智能与机器人
+    ("智东西", "https://www.zhidx.com/feed"),
+    ("机器人大讲堂", "https://www.robotstore.cn/feed"),
+    ("高工机器人", "https://www.gg-robotics.com/feed"),
+    
+    # 脑科学×AI
+    ("脑人言", "https://www.naorenyan.com/feed"),
+    ("神经科技", "https://www.neuraltech.cn/feed"),
+    
+    # 国际中文
+    ("机器之心英文版", "https://syncedreview.com/feed/"),
+    ("DeepTech 深科技", "https://www.deeptech.cn/feed"),
+    
+    # ===== 英文资讯源 =====
     # AI 前沿与大模型
     ("arXiv AI", "http://export.arxiv.org/rss/cs.AI"),
     ("Hugging Face Papers", "https://huggingface.co/papers/rss"),

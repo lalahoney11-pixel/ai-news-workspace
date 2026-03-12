@@ -102,13 +102,21 @@ def evaluate_entry(entry: Dict, api_keys: Dict) -> Optional[Dict]:
     # 降级方案：智能关键词打分
     print(f"  ⚡ 使用关键词快速打分...")
     
-    # 核心 AI 词（必须有至少一个）
-    ai_keywords = ['ai ', 'artificial intelligence', 'machine learning', 'deep learning', 
+    # 核心 AI 词（必须有至少一个）- 英文
+    ai_keywords_en = ['ai ', 'artificial intelligence', 'machine learning', 'deep learning', 
                    'llm', 'language model', 'neural network', 'agentic', 'agi']
     
-    # 前沿技术词（有则加分）
-    tech_keywords = ['embodied', 'robot', 'humanoid', 'brain-computer', 'bci', 'neural interface',
+    # 核心 AI 词 - 中文
+    ai_keywords_cn = ['人工智能', '机器学习', '深度学习', '大模型', '语言模型', 
+                      '神经网络', '智能体', '生成式 ai', 'aigc']
+    
+    # 前沿技术词 - 英文
+    tech_keywords_en = ['embodied', 'robot', 'humanoid', 'brain-computer', 'bci', 'neural interface',
                      'autonomous', 'reinforcement learning', 'transformer', 'diffusion']
+    
+    # 前沿技术词 - 中文
+    tech_keywords_cn = ['具身智能', '人形机器人', '脑机接口', '自主', '强化学习',
+                        ' transformers', '扩散模型', '多模态']
     
     # 负面词（有则减分）
     negative_keywords = ['layoff', 'fired', 'lawsuit', 'scandal', 'stock', 'earnings',
@@ -117,16 +125,17 @@ def evaluate_entry(entry: Dict, api_keys: Dict) -> Optional[Dict]:
     # 打分逻辑
     score = 3  # 基础分
     
-    # 检查是否有 AI 核心词（必须有）
-    has_ai = any(kw in text for kw in ai_keywords)
+    # 检查是否有 AI 核心词（必须有）- 中英文
+    has_ai = any(kw in text for kw in ai_keywords_en) or any(kw in text for kw in ai_keywords_cn)
     if has_ai:
         score += 3
     else:
         # 没有 AI 核心词，最高只能得 5 分
         score = 2
     
-    # 前沿技术词加分
-    score += sum(1 for kw in tech_keywords if kw in text)
+    # 前沿技术词加分 - 中英文
+    score += sum(1 for kw in tech_keywords_en if kw in text)
+    score += sum(1 for kw in tech_keywords_cn if kw in text)
     
     # 负面词减分
     score -= sum(1 for kw in negative_keywords if kw in text)
@@ -137,20 +146,29 @@ def evaluate_entry(entry: Dict, api_keys: Dict) -> Optional[Dict]:
         score += 1
     if 'techcrunch' in source:
         score -= 1  # 偏商业
+    if '机器之心' in source or '量子位' in source:
+        score += 1  # 中文优质源
     
     # 限制 1-10 分
     score = max(1, min(10, score))
     
     # 生成标签
     tags = []
-    if 'embodied' in text or 'robot' in text or 'humanoid' in text:
+    # 中文标签
+    if '具身智能' in text or '人形机器人' in text or any(kw in text for kw in ['robot', 'humanoid', 'embodied']):
         tags.append("具身智能")
-    if 'brain' in text or 'neural' in text or 'bci' in text:
+    if '脑机接口' in text or any(kw in text for kw in ['brain-computer', 'bci', 'neural interface']):
         tags.append("脑机接口")
-    if 'llm' in text or 'language model' in text:
+    if any(kw in text for kw in ['大模型', 'llm', 'language model', '语言模型']):
         tags.append("大模型")
+    # 英文标签 fallback
     if not tags:
-        tags.append("AI 前沿")
+        if 'embodied' in text or 'robot' in text or 'humanoid' in text:
+            tags.append("具身智能")
+        elif 'brain' in text or 'neural' in text or 'bci' in text:
+            tags.append("脑机接口")
+        else:
+            tags.append("AI 前沿")
     
     return {
         "score": score,
