@@ -1,0 +1,22 @@
+# 敏感配置
+config/.env
+*.key
+*.secret
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
