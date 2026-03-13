@@ -173,7 +173,7 @@ def evaluate_entry(entry: Dict, api_keys: Dict) -> Optional[Dict]:
     return {
         "score": score,
         "tags": tags,
-        "reason": f"{'AI 核心内容' if has_ai else 'AI 关联度低'}" + (f" +{sum(1 for kw in tech_keywords if kw in text)} 技术点" if any(kw in text for kw in tech_keywords) else "")
+        "reason": f"{'AI 核心内容' if has_ai else 'AI 关联度低'}" + (f" +{sum(1 for kw in tech_keywords_en if kw in text) + sum(1 for kw in tech_keywords_cn if kw in text)} 技术点" if any(kw in text for kw in tech_keywords_en) or any(kw in text for kw in tech_keywords_cn) else "")
     }
 
 if __name__ == "__main__":
